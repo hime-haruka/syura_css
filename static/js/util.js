@@ -78,9 +78,6 @@
   const btnReset = document.getElementById("formReset");
 
   // ---- pricing (index.html 가격표 기준) ----
-  // 커스텀 채팅 패키지: 250,000 / CSS 이식: 100,000
-  // 컬러 프리셋 +5,000 / 엠바고 +20,000 / 포트폴리오 비공개 +30,000 / 후원 플랫폼 추가 +10,000
-  // 빠른 마감 ×1.5 / 당일 마감 ×2
   const PRICING = {
     base: {
       custom: 250000,
