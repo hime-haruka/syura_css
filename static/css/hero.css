@@ -1,0 +1,213 @@
+/* =========================
+   Hero / Intro Cards
+   ========================= */
+#hero {
+    margin-top: 40px;
+}
+
+#hero .introWrap {
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+.introGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+/* 카드 공통 */
+.introCard {
+    display: grid;
+    align-items: center;
+    gap: 22px;
+
+    background: var(--bg-card);
+    border: 1px solid var(--line-soft);
+    box-shadow: var(--shadow-card);
+    border-radius: 28px;
+
+    padding: 26px 28px;
+    overflow: hidden;
+}
+
+.introCard--imgLeft {
+    grid-template-columns: 140px 1fr;
+}
+
+.introCard--imgRight {
+    grid-template-columns: 1fr 140px;
+}
+
+.introCard--imgRight .introCard__media {
+    order: 2;
+}
+
+.introCard--imgRight .introCard__body {
+        order: 1;
+}
+
+/* 이미지 영역 */
+.introCard__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.introCard__img {
+    width: 128px;
+    height: 128px;
+    object-fit: cover;
+    border-radius: 22px;
+
+    border: 1px solid var(--line-normal);
+    background: var(--bg-card-soft);
+    box-shadow: var(--shadow-soft);
+}
+
+/* 본문 */
+.introCard__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.introCard__head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.introCard__name {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.introCard__name span {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line-normal);
+    background: var(--bg-card-soft);
+}
+
+.introCard__role {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text-sub);
+}
+
+/* 태그(칩) */
+.introCard__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+/* 공용 칩 */
+.tagChip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+
+    color: var(--text-sub);
+    background: color-mix(in srgb, var(--accent-100) 35%, var(--bg-card));
+    border: 1px solid color-mix(in srgb, var(--primary-500) 14%, var(--line-soft));
+}
+
+.introCard__desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-sub);
+}
+
+.introCard--imgLeft {
+    background:
+    radial-gradient(700px 280px at 0% 0%, color-mix(in srgb, var(--accent-100) 55%, transparent) 0%, transparent 55%),
+    var(--bg-card);
+}
+
+.introCard--imgRight {
+    background:
+    radial-gradient(700px 280px at 100% 0%, color-mix(in srgb, var(--ui-active) 55%, transparent) 0%, transparent 55%),
+    var(--bg-card);
+}
+
+.introCard:focus-within {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 3px;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 840px) {
+    .introCard--imgLeft,
+    .introCard--imgRight {
+        grid-template-columns: 120px 1fr;
+    }
+
+    .introCard--imgRight .introCard__media {
+        order: 0;
+    }
+    .introCard--imgRight .introCard__body {
+        order: 0;
+    }
+
+    .introCard__img {
+        width: 112px;
+        height: 112px;
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 640px) {
+    .introGrid {
+        gap: 14px;
+    }
+
+    .introCard {
+        grid-template-columns: 1fr;
+        text-align: left;
+        padding: 18px 18px;
+        gap: 14px;
+    }
+
+    .introCard__media {
+        justify-content: flex-start;
+    }
+
+    .introCard__img {
+        width: 96px;
+        height: 96px;
+        border-radius: 16px;
+    }
+
+    .introCard__name {
+        font-size: 20px;
+    }
+
+    .introCard__desc {
+        font-size: 13px;
+    }
+
+    .tagChip {
+        font-size: 11px;
+        padding: 6px 9px;
+    }
+}

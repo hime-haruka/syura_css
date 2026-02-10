@@ -1,0 +1,411 @@
+/* =========================
+   Process / Workflow
+========================= */
+
+.workflow__head {
+  display: grid;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.wf {
+  --wf-gap: 10px;
+  --wf-radius: 14px;
+  --wf-line: rgba(255, 255, 255, 0.12);
+  --wf-stroke: rgba(255, 255, 255, 0.14);
+  --wf-bg: rgba(255, 255, 255, 0.04);
+
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: grid;
+  gap: var(--wf-gap);
+
+  position: relative;
+}
+
+.wf__item {
+  display: grid;
+  grid-template-columns: 44px 44px 1fr;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 12px;
+  border: 1px solid var(--wf-stroke);
+  background: var(--wf-bg);
+  border-radius: var(--wf-radius);
+
+  position: relative;
+  overflow: hidden;
+
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.wf__no {
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+
+    display: grid;
+    place-items: center;
+
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    font-size: 12px;
+
+    border: 1px solid var(--wf-stroke);
+    background: rgba(255, 255, 255, 0.041);
+    backdrop-filter: blur(6px);
+}
+
+.wf__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(6px);
+}
+
+.wf__body {
+    min-width: 0;
+}
+
+.wf__row {
+    display: grid;
+    gap: 2px;
+}
+
+.wf__title {
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+}
+
+.wf__meta {
+    opacity: 0.82;
+    font-size: 12.5px;
+    line-height: 1.35;
+    display: block;
+    text-wrap: balance;
+    word-break: keep-all;
+    line-height: 1.45;
+    max-width: 14em;
+    margin: 0 auto;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .wf__item:hover {
+        transform: translateY(-2px);
+        border-color: color-mix(in srgb, var(--primary-500) 28%, var(--line-normal));
+        box-shadow: 0 14px 34px rgba(31, 47, 85, 0.14);
+        --flow-dir: reverse;
+    }
+
+    .wf__item:hover .wf__icon {
+        animation:
+        wfPop 520ms ease-out 1,
+        wfFloat 3.2s ease-in-out infinite;
+    }
+
+    .wf__item:hover .wf__no {
+        background: color-mix(in srgb, var(--bg-card) 68%, var(--accent-100));
+    }
+}
+
+.wf__item:focus-within {
+    outline: 2px solid rgba(255, 255, 255, 0.26);
+    outline-offset: 2px;
+}
+
+/* =========================
+   Desktop: horizontal stepper
+========================= */
+@media (min-width: 860px) {
+    .wf {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .wf__item {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        justify-items: center;
+        text-align: center;
+        padding: 14px 10px;
+    }
+
+    .wf__item::before {
+        display: none;
+    }
+
+    .wf__item::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 33px;
+        width: 100%;
+        height: 2px;
+        transform: translateX(50%);
+        background: linear-gradient(to right, var(--wf-line), transparent);
+        opacity: 0.65;
+        pointer-events: none;
+    }
+
+    .wf__item:last-child::after {
+        display: none;
+    }
+
+    .wf__no {
+        order: 1;
+        margin-bottom: 8px;
+    }
+    .wf__icon {
+        order: 2;
+        margin-bottom: 10px;
+        animation-duration: 3.8s;
+    }
+    .wf__body {
+        order: 3;
+    }
+
+    .wf__title {
+        font-size: 13.5px;
+    }
+    .wf__meta {
+        font-size: 12px;
+    }
+}
+
+/* =========================
+   Workflow polish
+========================= */
+
+.wf {
+    --wf-stroke: color-mix(in srgb, var(--line-normal) 72%, transparent);
+    --wf-line: color-mix(in srgb, var(--primary-500) 22%, transparent);
+    --wf-bg: color-mix(in srgb, var(--bg-card-soft) 78%, var(--accent-100));
+}
+
+.wf__item {
+    background:
+    radial-gradient(360px 160px at 12% 0%,
+        color-mix(in srgb, var(--accent-100) 70%, transparent) 0%,
+        transparent 62%),
+    radial-gradient(320px 160px at 88% 0%,
+        color-mix(in srgb, var(--ui-active) 70%, transparent) 0%,
+        transparent 62%),
+    var(--wf-bg);
+    box-shadow: var(--shadow-soft);
+}
+
+.wf__item::before {}
+
+.wf__item > * {
+    position: relative;
+    z-index: 2;
+}
+
+.wf__item::marker { content: ""; }
+
+.wf__item::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: calc(var(--wf-radius) - 1px);
+    pointer-events: none;
+    z-index: 1;
+    background:
+    linear-gradient(
+        to bottom,
+        color-mix(in srgb, #fff 42%, transparent),
+        transparent 42%
+    );
+    opacity: 0.45;
+}
+
+.wf__no {
+    border-color: color-mix(in srgb, var(--primary-500) 16%, var(--line-soft));
+    background: color-mix(in srgb, var(--bg-card) 72%, var(--accent-100));
+}
+
+
+
+/* =========================
+   Mobile fix
+========================= */
+@media (max-width: 859px) {
+    .wf { gap: 10px; }
+
+    .wf__item {
+        align-items: center;
+        grid-template-columns: 54px 44px 1fr;
+        gap: 12px;
+
+        padding: 12px 14px;
+    }
+
+    .wf__item::before {
+        left: 27px;
+        top: -14px;
+        bottom: -14px;
+        opacity: 0.55;
+    }
+
+    .wf__no {
+        width: 40px;
+        height: 40px;
+        justify-self: center;
+    }
+
+    .wf__icon {
+        justify-self: center;
+        margin-top: 2px;
+    }
+
+    .wf__row {
+        gap: 4px;
+        justify-items: start;
+        text-align: left;
+    }
+
+    .wf__title {
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .wf__meta {
+        margin: 0;
+        max-width: none;
+        text-align: left;
+        line-height: 1.45;
+        word-break: keep-all;
+        text-wrap: balance;
+    }
+}
+
+@media (max-width: 420px) {
+    .wf__item { grid-template-columns: 52px 40px 1fr; }
+    .wf__meta { font-size: 12px; line-height: 1.5; }
+}
+
+
+
+
+/* =========================
+   Notice (작업 전 안내)
+   - rendered into #notice
+========================= */
+
+.notice {
+  /* process 섹션 안에서 workflow 카드랑 리듬 맞추기 */
+  margin-top: 18px;
+}
+
+.notice__head .sectionDesc {
+  margin-bottom: 22px; /* 기본 48px은 공지에는 살짝 과함 */
+}
+
+/* 리스트: 카드 안에 또 카드 느낌 */
+.noticeList {
+  display: grid;
+  gap: 10px;
+}
+
+/* 개별 항목 */
+.noticeItem {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: center;
+
+  padding: 14px 16px;
+  border-radius: 18px;
+
+  background:
+    radial-gradient(560px 200px at 0% 0%,
+      color-mix(in srgb, var(--accent-100) 55%, transparent) 0%,
+      transparent 55%),
+    var(--bg-card-soft);
+
+  border: 1px solid color-mix(in srgb, var(--primary-500) 12%, var(--line-soft));
+  box-shadow: var(--shadow-soft);
+
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+/* hover (흰색으로 변하지 않게, 톤만 살짝 밝게) */
+@media (hover: hover) and (pointer: fine) {
+  .noticeItem:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--primary-500) 18%, var(--line-normal));
+    background:
+      radial-gradient(560px 200px at 100% 0%,
+        color-mix(in srgb, var(--ui-active) 55%, transparent) 0%,
+        transparent 55%),
+      color-mix(in srgb, var(--bg-card-soft) 78%, var(--accent-100));
+  }
+}
+
+/* 아이콘 칩 */
+.noticeItem__icon {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.noticeItem__desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-sub);
+  word-break: keep-all;
+  text-wrap: balance;
+}
+
+.noticeItem__desc em {
+  font-style: normal;
+  font-weight: 900;
+}
+
+.noticeList .noticeItem + .noticeItem {
+  position: relative;
+}
+
+@media (max-width: 640px) {
+  .notice {
+    margin-top: 14px;
+  }
+
+  .notice__head .sectionDesc {
+    margin-bottom: 18px;
+  }
+
+  .noticeItem {
+    padding: 12px 12px;
+    border-radius: 16px;
+    grid-template-columns: 40px 1fr;
+    gap: 10px;
+  }
+
+  .noticeItem__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    font-size: 17px;
+  }
+
+  .noticeItem__desc {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .noticeItem__desc em {
+    padding: 2px 7px;
+  }
+}
