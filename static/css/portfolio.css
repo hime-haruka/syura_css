@@ -1,141 +1,313 @@
-#portfolio.sec {
-    position: relative;
-    background: linear-gradient(
-    to bottom,
-    #ffdcb14d,
-    #ffc3b14d 220px
-    );
-}
-
-
-#portfolio .tplGrid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-  gap:22px;
-}
-
-#portfolio .pfCard{
-  display:block;
-  text-decoration:none;
-  color:inherit;
-  border-radius:18px;
-  overflow:hidden;
-  position:relative;
-
-  background:var(--card-bg, #fff);
-  box-shadow:0 10px 28px rgba(0,0,0,.08);
-  transition:transform .22s ease, box-shadow .22s ease;
-}
-
-/* hover */
-#portfolio .pfCard:hover{
-  transform:translateY(-6px);
-  box-shadow:0 18px 42px rgba(0,0,0,.14);
-}
-
-
 /* =========================
-        썸네일
-========================= */
+   Portfolio (clean)
+   ========================= */
+#portfolio { padding: 0 24px; }
+#portfolio .pofWrap { max-width: 1040px; margin: 0 auto; }
 
-#portfolio .tplCard__thumb{
-  position:relative;
-  aspect-ratio:1 / 1;
-  overflow:hidden;
-  background:#f3f5f8;
-  border-radius: var(--radiusSm), var(--radiusSm), 0 0;
+.pof__head .sectionDesc { margin-bottom: 18px; }
+
+/* Tabs */
+.pofTabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.pofTab{
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:800;
+  border:1px solid var(--line-normal);
+  background:var(--bg-card-soft);
+  color:var(--text-sub);
+  cursor:pointer;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.pofTab:hover{
+  background:var(--ui-hover);
+  border-color:var(--line-strong);
+}
+.pofTab.is-active{
+  background:var(--ui-active);
+  border-color:var(--primary-500);
+  color:var(--text-main);
 }
 
-#portfolio .tplCard__thumb img{
-  position:absolute;
-  inset:0;
+/* Stage */
+.pofStage{
+  position:relative;
+  margin-top:18px;
+}
+
+/* Rail: 버튼 공간 확보 */
+.pofRail{
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding:10px 90px 14px;
+  border-radius:18px;
+}
+
+.pofRail::-webkit-scrollbar{ display:none; }
+
+/* Side fade */
+.pofStage::before,
+.pofStage::after{
+    content:"";
+    position:absolute;
+    top:0; bottom:0;
+    width:80px;
+    z-index:3;
+    pointer-events:none;
+}
+
+.pofStage::before{
+  left:0;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--bg-card) 100%, transparent) 0%,
+    color-mix(in srgb, var(--bg-card) 98%, transparent) 18%,
+    color-mix(in srgb, var(--bg-card) 94%, transparent) 35%,
+    color-mix(in srgb, var(--bg-card) 86%, transparent) 52%,
+    color-mix(in srgb, var(--bg-card) 72%, transparent) 68%,
+    transparent 100%
+  );
+}
+
+.pofStage::after{
+  right:0;
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--bg-card) 100%, transparent) 0%,
+    color-mix(in srgb, var(--bg-card) 98%, transparent) 18%,
+    color-mix(in srgb, var(--bg-card) 94%, transparent) 35%,
+    color-mix(in srgb, var(--bg-card) 86%, transparent) 52%,
+    color-mix(in srgb, var(--bg-card) 72%, transparent) 68%,
+    transparent 100%
+  );
+}
+
+
+/* Track */
+.pofTrack{
+    display:flex;
+    gap:12px;
+    align-items:stretch;
+}
+
+/* Card */
+.pofCard{
+  scroll-snap-align:start;
+  width:320px;
+  flex:0 0 auto;
+  border-radius:22px;
+  border:1px solid var(--line-soft);
+  background:var(--bg-card);
+  box-shadow:var(--shadow-soft);
+  overflow:hidden;
+  cursor:pointer;
+  text-align:left;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  scroll-snap-align: center;
+}
+
+.pofCard:hover{
+  transform:translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary-500) 18%, var(--line-soft));
+  box-shadow:0 14px 32px rgba(31,47,85,.12);
+}
+
+/* Thumb */
+.pofThumb{
+  position:relative;
+  aspect-ratio:16/9;
+  background:var(--bg-card-soft);
+}
+.pofThumb__img{
   width:100%;
   height:100%;
   object-fit:cover;
-  transition:transform .35s ease, filter .35s ease;
+  display:block;
+}
+.pofThumb__play{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  width: 42px;
+  height: 42px;
+  padding-left: 3px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  color: #fff;
+  background: #b90b0b;
+  border:1px solid color-mix(in srgb, var(--primary-500) 25%, transparent);
+  box-shadow:0 10px 24px rgba(31,47,85,.18);
 }
 
-#portfolio .pfCard:hover .tplCard__thumb img{
-  transform:scale(1.06);
-  filter:brightness(1.05);
-}
-
-
-#portfolio .tplCard__meta{
-  padding:14px 14px 16px;
+/* Meta */
+.pofMeta{
+  padding:12px 12px 14px;
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:10px;
 }
-
-#portfolio .tplCard__name{
-  font-size:15px;
-  font-weight:700;
-  letter-spacing:.2px;
+.pofTitle{
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:-0.02em;
+  color:var(--text-main);
+  line-height:1.3;
 }
-
-#portfolio .tplCard__sub{
-  font-size:12.5px;
-  color:#7b8190;
-}
-
-#portfolio .tplCard__sub{
+.pofTags{
   display:flex;
   flex-wrap:wrap;
   gap:6px;
 }
-
-#portfolio .tplCard__sub::before{
-  content:"";
+.pofEmpty{
+  padding:14px;
+  color:var(--text-muted);
+  font-size:13px;
 }
 
-@media (max-width:600px){
-  #portfolio .tplGrid{
-    grid-template-columns:repeat(2,1fr);
-    gap:14px;
-  }
+/* Nav: 레일 세로 중앙 */
+.pofNav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:56px;
+  height:56px;
+  border:0;
+  padding:0;
+  cursor:pointer;
+  z-index:6;
+  background:transparent;
+  display:grid;
+  place-items:center;
+}
 
-  #portfolio .tplCard__name{
-    font-size:14px;
-  }
+/* 아이콘 위치 */
+.pofNav--prev{ left: -20px; }
+.pofNav--next{ right: -20px; }
 
-  #portfolio .tplCard__meta{
-    padding:12px;
-  }
+.pofNav::after{
+  content:attr(data-icon);
+  font-size:26px;
+  font-weight:900;
+  line-height:1;
+  background:none;
+  border:none;
+  width:auto;
+  height:auto;
+  border-radius:0;
+  color: rgba(31, 47, 85, .62);
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.35),
+    0 6px 16px rgba(31,47,85,.18);
+
+  transition: transform .18s ease, color .18s ease, text-shadow .18s ease, opacity .18s ease;
+  opacity: .85;
+}
+
+.pofNav:hover::after{
+  transform: translateY(-1px);
+  opacity: 1;
+  color: rgba(31, 47, 85, .78);
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.45),
+    0 10px 22px rgba(31,47,85,.22);
+}
+
+.pofNav:active::after{
+  transform: translateY(0);
+  opacity: 1;
+  color: rgba(31, 47, 85, .88);
 }
 
 
-/* 아이콘 추가 */
-#portfolio .pfCard__ext{
+
+/* Responsive */
+@media (max-width: 980px){
+  .pofCard{ width:300px; }
+}
+@media (max-width: 760px){
+  .pofCard{ width:260px; }
+}
+@media (max-width: 640px){
+  #portfolio{ padding:0 14px; }
+  .pofRail{ padding:10px 10px 14px; }
+  .pofNav{ display:none; }
+}
+
+/* =========================
+   Modal
+   ========================= */
+.pofModal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+}
+.pofModal__backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(10,18,34,.55);
+}
+.pofModal__panel{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(980px, calc(100vw - 28px));
+  background:var(--bg-card);
+  border-radius:24px;
+  box-shadow:0 30px 90px rgba(0,0,0,.25);
+  overflow:hidden;
+}
+.pofModal__close{
   position:absolute;
   top:10px;
   right:10px;
-
-  width:30px;
-  height:30px;
-  border-radius:10px;
-
-  background:rgba(255,255,255,.92);
-  box-shadow:0 6px 18px rgba(0,0,0,.18);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  opacity:0;
-  transform:translateY(-6px) scale(.92);
-  transition:all .22s ease;
+  width:38px;
+  height:38px;
+  border-radius:999px;
+  background: color-mix(in srgb, var(--bg-card) 90%, transparent);
+  cursor:pointer;
+}
+.pofModal__frame{
+  aspect-ratio:16/9;
+  background:#000;
+}
+.pofModal__frame iframe{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.pofModal__title{
+  display:none;
 }
 
-/* svg */
-#portfolio .pfCard__icon{
-  width:16px;
-  height:16px;
-  color:#4b5563;
+@media (max-width: 640px){
+  .pofStage::before,
+  .pofStage::after{
+    display:none;
+  }
 }
 
-/* hover 등장 */
-#portfolio .pfCard:hover .pfCard__ext{
-  opacity:1;
-  transform:translateY(0) scale(1);
+.pofStage.is-few .pofNav,
+.pofStage.is-empty .pofNav,
+.pofStage.is-single .pofNav{
+  display: none;
+}
+
+.pofStage.is-few::before,
+.pofStage.is-few::after,
+.pofStage.is-empty::before,
+.pofStage.is-empty::after,
+.pofStage.is-single::before,
+.pofStage.is-single::after{
+  opacity: 0;
+  pointer-events: none;
 }
