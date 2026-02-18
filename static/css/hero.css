@@ -1,213 +1,175 @@
-/* =========================
-   Hero / Intro Cards
-   ========================= */
-#hero {
-    margin-top: 40px;
-}
-
-#hero .introWrap {
-    max-width: 1040px;
-    margin: 0 auto;
-}
-
-.introGrid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-}
-
-/* 카드 공통 */
-.introCard {
-    display: grid;
-    align-items: center;
-    gap: 22px;
-
-    background: var(--bg-card);
-    border: 1px solid var(--line-soft);
-    box-shadow: var(--shadow-card);
-    border-radius: 28px;
-
-    padding: 26px 28px;
+.hero {
+    position: relative;
     overflow: hidden;
+    color: var(--ink);
+    padding: 16px;
 }
 
-.introCard--imgLeft {
-    grid-template-columns: 140px 1fr;
+.hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 120px;
+    background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0),
+    #bfe6ffa1
+    );
 }
 
-.introCard--imgRight {
-    grid-template-columns: 1fr 140px;
-}
-
-.introCard--imgRight .introCard__media {
-    order: 2;
-}
-
-.introCard--imgRight .introCard__body {
-        order: 1;
-}
-
-/* 이미지 영역 */
-.introCard__media {
-    display: flex;
+.hero__inner {
+    position: relative;
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: clamp(18px, 3vw, 30px);
     align-items: center;
-    justify-content: center;
+    z-index: 1;
 }
 
-.introCard__img {
-    width: 128px;
-    height: 128px;
-    object-fit: cover;
-    border-radius: 22px;
-
-    border: 1px solid var(--line-normal);
-    background: var(--bg-card-soft);
-    box-shadow: var(--shadow-soft);
+.hero__kicker {
+    display:inline-block;
+    font-size: 13px;
+    letter-spacing: .2px;
+    color: var(--ink);
+    background: rgba(255,255,255,.55);
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    border-radius: 999px;
+    margin: 0 0 12px;
+    font-weight: 600;
 }
 
-/* 본문 */
-.introCard__body {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+.hero__title {
+    margin: 0 0 10px;
+    font-size: clamp(26px, 3.2vw, 40px);
+    line-height: 1.12;
+    letter-spacing: -0.5px;
 }
 
-.introCard__head {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+.hero__subtitle {
+    margin: 0 0 10px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
 }
 
-.introCard__name {
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    color: var(--text-main);
-    display: flex;
-    align-items: baseline;
+.hero__about {
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--muted);
+}
+
+.hero__bullets {
+margin: 0 0 16px;
+padding: 0;
+list-style: none;
+display: grid;
+gap: 10px;
+}
+
+.hero__bullets li {
+display:flex;
+gap: 10px;
+align-items: flex-start;
+color: var(--ink);
+font-size: 14px;
+line-height: 1.6;
+}
+
+.hero__bullets li::before {
+    content:"";
+    width: 10px;
+    height: 10px;
+    margin-top: 6px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(184,212,230,.22);
+}
+
+.hero__cta {
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 8px 0 10px;
+}
+
+.hero__note {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.hero__visual {
+    display: grid;
     gap: 10px;
 }
 
-.introCard__name span {
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--text-muted);
-    letter-spacing: 0.01em;
-    padding: 4px 8px;
-    border-radius: 999px;
-    border: 1px solid var(--line-normal);
-    background: var(--bg-card-soft);
-}
-
-.introCard__role {
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    color: var(--text-sub);
-}
-
-/* 태그(칩) */
-.introCard__tags {
-    display: flex;
-    flex-wrap: wrap;
+.hero__visualCaption {
+    display:flex;
     gap: 8px;
-    margin-top: 2px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
-/* 공용 칩 */
-.tagChip {
+.showcase {
+    margin: 0;
+    position: relative;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.55);
+    padding: 14px;
+    overflow: hidden;
+}
+
+.showcase__img {
+    display: block;
+    width: 100%;
+    height: 280px;
+    border-radius: var(--radiusSm);
+    border: 1px solid var(--line);
+    background: #f7f8fb;
+    object-fit: contain;
+}
+
+.callout {
+    position: absolute;
     display: inline-flex;
     align-items: center;
-    padding: 6px 10px;
+    gap: 8px;
+    padding: 8px 10px;
     border-radius: 999px;
-
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.86);
+    color: var(--ink);
     font-size: 12px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-
-    color: var(--text-sub);
-    background: color-mix(in srgb, var(--accent-100) 35%, var(--bg-card));
-    border: 1px solid color-mix(in srgb, var(--primary-500) 14%, var(--line-soft));
+    line-height: 1;
+    box-shadow: 0 10px 24px rgba(36,48,58,.08);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
-.introCard__desc {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--text-sub);
+.callout__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(191,230,255,.25);
+    flex: 0 0 auto;
 }
 
-.introCard--imgLeft {
-    background:
-    radial-gradient(700px 280px at 0% 0%, color-mix(in srgb, var(--accent-100) 55%, transparent) 0%, transparent 55%),
-    var(--bg-card);
-}
+.callout--1 { top: 26px; left: 26px; }
+.callout--2 { top: 26px; right: 26px; }
+.callout--3 { bottom: 26px; left: 26px; }
 
-.introCard--imgRight {
-    background:
-    radial-gradient(700px 280px at 100% 0%, color-mix(in srgb, var(--ui-active) 55%, transparent) 0%, transparent 55%),
-    var(--bg-card);
-}
-
-.introCard:focus-within {
-    outline: 2px solid var(--ui-focus);
-    outline-offset: 3px;
-}
-
-/* =========================
-   Responsive
-   ========================= */
-@media (max-width: 840px) {
-    .introCard--imgLeft,
-    .introCard--imgRight {
-        grid-template-columns: 120px 1fr;
-    }
-
-    .introCard--imgRight .introCard__media {
-        order: 0;
-    }
-    .introCard--imgRight .introCard__body {
-        order: 0;
-    }
-
-    .introCard__img {
-        width: 112px;
-        height: 112px;
-        border-radius: 18px;
-    }
-}
-
-@media (max-width: 640px) {
-    .introGrid {
-        gap: 14px;
-    }
-
-    .introCard {
-        grid-template-columns: 1fr;
-        text-align: left;
-        padding: 18px 18px;
-        gap: 14px;
-    }
-
-    .introCard__media {
-        justify-content: flex-start;
-    }
-
-    .introCard__img {
-        width: 96px;
-        height: 96px;
-        border-radius: 16px;
-    }
-
-    .introCard__name {
-        font-size: 20px;
-    }
-
-    .introCard__desc {
-        font-size: 13px;
-    }
-
-    .tagChip {
-        font-size: 11px;
-        padding: 6px 9px;
-    }
+/* Responsive */
+@media (max-width: 900px) {
+  .showcase__img { height: 240px; }
+  .callout { font-size: 11px; padding: 7px 9px; }
+  .callout--2 { top: auto; bottom: 26px; right: 26px; }
 }
