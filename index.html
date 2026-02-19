@@ -449,7 +449,7 @@
                         <input class="fInput" id="chatPlatform" name="chatPlatform" type="url" placeholder="위플랩/치지직 등" />
                     </div>
 
-                    <!-- 옵션 선택: 커스텀 채팅 패키지 / CSS 이식 -->
+                    <!-- 옵션 선택 -->
                     <fieldset class="fRow fFieldset">
                         <legend class="fLegend">옵션 선택</legend>
 
@@ -460,11 +460,20 @@
                         </label>
 
                         <label class="pill">
+                            <input class="pill__input" type="radio" name="base_option" value="light" />
+                            <span class="pill__ui">라이트 패키지</span>
+                        </label>
+
+                        <label class="pill">
+                            <input class="pill__input" type="radio" name="base_option" value="omakase" />
+                            <span class="pill__ui">무컨펌 오마카세</span>
+                        </label>
+
+                        <label class="pill">
                             <input class="pill__input" type="radio" name="base_option" value="migrate" />
                             <span class="pill__ui">CSS 이식</span>
                         </label>
                         </div>
-
                         <p class="fHint">※ CSS 이식의 경우 디자인 파일을 첨부해주시면 견적가 안내드립니다.</p>
                     </fieldset>
 
