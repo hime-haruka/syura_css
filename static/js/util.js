@@ -13,8 +13,8 @@
   const PRICING = {
     base: {
       custom: 250000,
-      light: 180000,
-      omakase: 220000,
+      light: 200000,
+      omakase: 180000,
       migrate: 100000,
     },
     add: {
