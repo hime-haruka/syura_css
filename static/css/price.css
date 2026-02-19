@@ -380,3 +380,47 @@
     font-size: 22px;
   }
 }
+
+/* Extra small breakpoint: prevent breaking on tiny screens */
+@media (max-width: 480px) {
+  .addonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .addonCard {
+    padding: 14px 14px 12px;
+    border-radius: 20px;
+  }
+
+  .addonTop {
+    align-items: flex-start;
+  }
+
+  .addonName {
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  .addonValue {
+    font-size: 13px;
+  }
+
+  .addonBody {
+    font-size: 12.5px;
+    margin-top: 8px;
+  }
+
+  .addonNote {
+    font-size: 12px;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .addonTop {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+}
