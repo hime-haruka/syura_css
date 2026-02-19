@@ -24,7 +24,7 @@
 /* Grid */
 .priceGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 16px;
   align-items: stretch;
 }
@@ -275,5 +275,108 @@
 
   .priceOpt__value {
     font-size: 13px;
+  }
+}
+
+.addonSec {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--line-soft) 70%, transparent);
+}
+
+.addonHead {
+  margin-bottom: 14px;
+}
+
+.addonKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--accent-100) 38%, var(--bg-card));
+  border: 1px solid color-mix(in srgb, var(--primary-500) 14%, var(--line-soft));
+}
+
+.addonTitle {
+  margin-top: 10px;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.addonDesc {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-sub);
+}
+
+.addonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 14px;
+}
+
+.addonCard {
+  background: var(--bg-card);
+  border: 1px solid var(--line-soft);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+  padding: 16px 16px 14px;
+}
+
+.addonCard--accent {
+  border-color: color-mix(in srgb, var(--primary-500) 22%, var(--line-soft));
+  background:
+    radial-gradient(520px 220px at 20% 0%, color-mix(in srgb, var(--accent-100) 55%, transparent) 0%, transparent 58%),
+    var(--bg-card);
+}
+
+.addonTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.addonName {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.addonValue {
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--primary-800);
+  white-space: nowrap;
+}
+
+.addonBody {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-sub);
+}
+
+.addonNote {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  padding-top: 10px;
+  border-top: 1px dashed color-mix(in srgb, var(--line-soft) 70%, transparent);
+}
+
+@media (max-width: 640px) {
+  .addonTitle {
+    font-size: 22px;
   }
 }
