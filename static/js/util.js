@@ -1,73 +1,5 @@
-(() => {
-  const nav = document.getElementById("nav");
-  const links = Array.from(document.querySelectorAll(".topnav__links a"));
-  const sections = links
-    .map((a) => document.querySelector(a.getAttribute("href")))
-    .filter(Boolean);
-
-  const onScrollHeader = () => {
-    if (!nav) return;
-    nav.classList.toggle("is-scrolled", window.scrollY > 8);
-  };
-
-  const setActive = (id) => {
-    links.forEach((a) => {
-      const href = a.getAttribute("href");
-      a.classList.toggle("is-active", href === `#${id}`);
-    });
-  };
-
-  const pickBestSection = (entries) => {
-    const headerOffset = 110;
-    const candidates = entries
-      .filter((e) => e.isIntersecting && e.target?.id)
-      .map((e) => ({
-        id: e.target.id,
-        top: e.boundingClientRect.top,
-        ratio: e.intersectionRatio,
-      }));
-
-    if (!candidates.length) return null;
-
-    candidates.sort((a, b) => {
-      const da = Math.abs(a.top - headerOffset);
-      const db = Math.abs(b.top - headerOffset);
-      if (da !== db) return da - db;
-
-      return b.ratio - a.ratio;
-    });
-
-    return candidates[0]?.id || null;
-  };
-
-  const io = new IntersectionObserver(
-    (entries) => {
-      const id = pickBestSection(entries);
-      if (id) setActive(id);
-    },
-    {
-      root: null,
-      threshold: [0.1, 0.2, 0.35, 0.5],
-      rootMargin: "-15% 0px -70% 0px",
-    }
-  );
-
-  sections.forEach((sec) => io.observe(sec));
-
-  window.addEventListener("scroll", onScrollHeader, { passive: true });
-  onScrollHeader();
-
-  window.addEventListener(
-    "load",
-    () => {
-      window.dispatchEvent(new Event("scroll"));
-    },
-    { once: true }
-  );
-})();
-
 // =========================
-// Form (Estimate + Copy)
+// Form (calc + copy)
 // =========================
 (() => {
   const form = document.getElementById("orderForm");
@@ -77,10 +9,12 @@
   const btnCopy = document.getElementById("formCopy");
   const btnReset = document.getElementById("formReset");
 
-  // ---- pricing (index.html 가격표 기준) ----
+  // ---- pricing ----
   const PRICING = {
     base: {
       custom: 250000,
+      light: 180000,
+      omakase: 220000,
       migrate: 100000,
     },
     add: {
@@ -88,6 +22,7 @@
       add_embargo: 20000,
       add_private_portfolio: 30000,
       add_tip_platform: 10000,
+      add_after_revision: 10000,
     },
     multiplier: {
       add_fast_deadline: 1.5,
@@ -114,9 +49,6 @@
   }
 
   function getTextValueFallback() {
-    // index.html에 "채팅창 플랫폼" input이 id/name이 잘못 들어가 있어서(중복)
-    // (:contentReference[oaicite:1]{index=1})
-    // 2번째 url input을 채팅 플랫폼으로 fallback 처리
     const urlInputs = qsa('input[type="url"].fInput, input[type="url"]');
     const streamUrl = urlInputs[0]?.value?.trim() || "";
     const chatPlatform = urlInputs[1]?.value?.trim() || "";
@@ -132,10 +64,10 @@
       if (getCheck(k)) addSum += v;
     });
 
-    // 마감 배수: 둘 다 체크되면 "당일 마감" 우선(= 2배)
     let mult = 1;
     const fast = getCheck("add_fast_deadline");
     const sameDay = getCheck("add_same_day");
+
     if (sameDay) mult = PRICING.multiplier.add_same_day;
     else if (fast) mult = PRICING.multiplier.add_fast_deadline;
 
@@ -151,20 +83,18 @@
       await navigator.clipboard.writeText(text);
       return true;
     } catch (_) {
-      // fallback
       try {
         const ta = document.createElement("textarea");
         ta.value = text;
         ta.setAttribute("readonly", "");
         ta.style.position = "fixed";
         ta.style.left = "-9999px";
-        ta.style.top = "0";
         document.body.appendChild(ta);
         ta.select();
         const ok = document.execCommand("copy");
         ta.remove();
         return ok;
-      } catch (__) {
+      } catch {
         return false;
       }
     }
@@ -174,7 +104,15 @@
     const { streamUrl, chatPlatform } = getTextValueFallback();
 
     const baseOpt = getRadio("base_option") || "custom";
-    const baseLabel = baseOpt === "migrate" ? "CSS 이식" : "커스텀 채팅 패키지";
+
+    const baseLabelMap = {
+      custom: "커스텀 채팅 패키지",
+      light: "라이트 패키지",
+      omakase: "무컨펌 오마카세",
+      migrate: "CSS 이식",
+    };
+
+    const baseLabel = baseLabelMap[baseOpt] || "커스텀 채팅 패키지";
 
     const optLabels = [];
     if (getCheck("add_color_preset")) optLabels.push("컬러 프리셋");
@@ -183,6 +121,7 @@
     if (getCheck("add_private_portfolio")) optLabels.push("포트폴리오 비공개");
     if (getCheck("add_fast_deadline")) optLabels.push("빠른 마감(48h)");
     if (getCheck("add_same_day")) optLabels.push("당일 마감(24h)");
+    if (getCheck("add_after_revision")) optLabels.push("완료 후 추가 수정");
 
     const showNickname = getRadio("show_nickname") || "yes";
     const showTipNickname = getRadio("show_tip_nickname") || "yes";
@@ -211,23 +150,18 @@
   }
 
   // ---- events ----
-  // 입력 변경마다 계산
   form.addEventListener("input", () => calcEstimate());
   form.addEventListener("change", () => calcEstimate());
-
-  // 초기화 후 견적도 리셋
   form.addEventListener("reset", () => {
     setTimeout(() => {
       if (estEl) estEl.textContent = "0";
     }, 0);
   });
 
-  // 버튼 클릭
   btnCopy?.addEventListener("click", async () => {
     const text = buildCopyTemplate();
     const ok = await copyText(text);
 
-    // UX: 성공/실패를 버튼 텍스트로 짧게 표시
     const old = btnCopy.textContent;
     btnCopy.textContent = ok ? "복사 완료!" : "복사 실패";
     btnCopy.disabled = true;
@@ -237,6 +171,5 @@
     }, 900);
   });
 
-  // 첫 진입 시 1회 계산
   calcEstimate();
 })();
