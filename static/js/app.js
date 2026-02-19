@@ -586,8 +586,6 @@
       if (settled) return;
       const w = imgEl.naturalWidth || 0;
       const h = imgEl.naturalHeight || 0;
-
-      // placeholder급(너무 작은) 이미지는 다음 후보로
       if (w > 0 && h > 0 && (w < 200 || h < 150)) {
         tryNext();
         return;
@@ -687,19 +685,17 @@
     const rail = root.querySelector(".pofRail");
     const tabBtns = Array.from(root.querySelectorAll(".pofTab"));
 
-    // 루프용 락
+    // loop lock
     let loopLock = false;
 
     function mount(cat) {
       const base = data
         .filter((v) => v.category === cat)
         .sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
-
-      // 버튼 숨김 + 루프 없음
       if (base.length === 0) {
         stage.classList.add("is-empty");
         stage.classList.remove("is-single");
-        stage.classList.remove("is-few"); // 추가
+        stage.classList.remove("is-few");
         rail.innerHTML = `<div class="pofEmpty">등록된 샘플이 아직 없어요.</div>`;
         rail.scrollLeft = 0;
         return;
@@ -746,7 +742,7 @@
         </div>
       `;
 
-      // 썸네일 적용
+      // 썸네일
       const imgs = rail.querySelectorAll(".pofThumb__img");
       const cards = rail.querySelectorAll(".pofCard");
       cards.forEach((c, i) => {
@@ -754,7 +750,6 @@
         if (vid && imgs[i]) setBestThumb(imgs[i], vid);
       });
 
-      // 가운데 묶음으로 이동(루프일 때만)
       requestAnimationFrame(() => {
         if (base.length >= 2) {
           rail.scrollLeft = rail.scrollWidth / 3;
@@ -764,10 +759,8 @@
       });
     }
 
-    // 초기 탭
     mount(active);
 
-    // 클릭 핸들러(탭/버튼/카드)
     root.addEventListener("click", (e) => {
       const tab = e.target.closest(".pofTab");
       if (tab) {
@@ -805,7 +798,7 @@
       }
     });
 
-    // 루프 보정
+    // loop
     rail.addEventListener("scroll", () => {
       if (stage.classList.contains("is-empty") || stage.classList.contains("is-single"))
         return;
