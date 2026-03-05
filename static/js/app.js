@@ -91,6 +91,196 @@
     return `${mm}월 ${dd}일`;
   };
 
+// =========================
+// Calendar (3 months tabs)
+// =========================
+(() => {
+  const root = document.getElementById("calendar");
+  if (!root) return;
+
+  const CSV_URLS = {
+    rules:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNJUl8qQYgFvPX5FghbjrApLUGLR7tou-ufaOlOrMh4aWlI757ec3Sn64vGVLo7QxaKTKR50x8tI_Z/pub?gid=0&single=true&output=csv",
+    closed_ranges:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNJUl8qQYgFvPX5FghbjrApLUGLR7tou-ufaOlOrMh4aWlI757ec3Sn64vGVLo7QxaKTKR50x8tI_Z/pub?gid=1262250161&single=true&output=csv",
+    meta:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNJUl8qQYgFvPX5FghbjrApLUGLR7tou-ufaOlOrMh4aWlI757ec3Sn64vGVLo7QxaKTKR50x8tI_Z/pub?gid=320439803&single=true&output=csv",
+  };
+
+  // -------------------------
+  // CSV Parser
+  // -------------------------
+  function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const next = text[i + 1];
+
+      if (ch === '"' && inQuotes && next === '"') {
+        cur += '"';
+        i++;
+        continue;
+      }
+
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+        continue;
+      }
+
+      if (ch === "," && !inQuotes) {
+        row.push(cur);
+        cur = "";
+        continue;
+      }
+
+      if ((ch === "\n" || ch === "\r") && !inQuotes) {
+        if (ch === "\r" && next === "\n") i++;
+        row.push(cur);
+        cur = "";
+        if (row.some((v) => v.trim() !== "")) rows.push(row);
+        row = [];
+        continue;
+      }
+
+      cur += ch;
+    }
+
+    row.push(cur);
+    if (row.some((v) => v.trim() !== "")) rows.push(row);
+
+    const headers = (rows.shift() || []).map((h) => h.trim());
+    return rows
+      .map((r) => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          obj[h] = (r[idx] ?? "").trim();
+        });
+        return obj;
+      })
+      .filter((o) => Object.values(o).some((v) => v !== ""));
+  }
+
+  async function fetchCSV(url) {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`CSV fetch failed: ${res.status}`);
+    const text = await res.text();
+    return parseCSV(text);
+  }
+
+  // -------------------------
+  // Date utils
+  // -------------------------
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const toYMD = (d) =>
+    `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const toYM = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+
+  const inRange = (ymd, start, end) => start <= ymd && ymd <= end;
+
+  const formatMD = (ymd) => {
+    const [, mm, dd] = ymd.split("-").map((x) => parseInt(x, 10));
+    return `${mm}월 ${dd}일`;
+  };
+
+// =========================
+// Calendar (3 months tabs)
+// =========================
+(() => {
+  const root = document.getElementById("calendar");
+  if (!root) return;
+
+  const CSV_URLS = {
+    rules:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNJUl8qQYgFvPX5FghbjrApLUGLR7tou-ufaOlOrMh4aWlI757ec3Sn64vGVLo7QxaKTKR50x8tI_Z/pub?gid=0&single=true&output=csv",
+    closed_ranges:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNJUl8qQYgFvPX5FghbjrApLUGLR7tou-ufaOlOrMh4aWlI757ec3Sn64vGVLo7QxaKTKR50x8tI_Z/pub?gid=1262250161&single=true&output=csv",
+    meta:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNJUl8qQYgFvPX5FghbjrApLUGLR7tou-ufaOlOrMh4aWlI757ec3Sn64vGVLo7QxaKTKR50x8tI_Z/pub?gid=320439803&single=true&output=csv",
+  };
+
+  // -------------------------
+  // CSV Parser
+  // -------------------------
+  function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const next = text[i + 1];
+
+      if (ch === '"' && inQuotes && next === '"') {
+        cur += '"';
+        i++;
+        continue;
+      }
+
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+        continue;
+      }
+
+      if (ch === "," && !inQuotes) {
+        row.push(cur);
+        cur = "";
+        continue;
+      }
+
+      if ((ch === "\n" || ch === "\r") && !inQuotes) {
+        if (ch === "\r" && next === "\n") i++;
+        row.push(cur);
+        cur = "";
+        if (row.some((v) => v.trim() !== "")) rows.push(row);
+        row = [];
+        continue;
+      }
+
+      cur += ch;
+    }
+
+    row.push(cur);
+    if (row.some((v) => v.trim() !== "")) rows.push(row);
+
+    const headers = (rows.shift() || []).map((h) => h.trim());
+    return rows
+      .map((r) => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          obj[h] = (r[idx] ?? "").trim();
+        });
+        return obj;
+      })
+      .filter((o) => Object.values(o).some((v) => v !== ""));
+  }
+
+  async function fetchCSV(url) {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`CSV fetch failed: ${res.status}`);
+    const text = await res.text();
+    return parseCSV(text);
+  }
+
+  // -------------------------
+  // Date utils
+  // -------------------------
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const toYMD = (d) =>
+    `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const toYM = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+
+  const inRange = (ymd, start, end) => start <= ymd && ymd <= end;
+
+  const formatMD = (ymd) => {
+    const [, mm, dd] = ymd.split("-").map((x) => parseInt(x, 10));
+    return `${mm}월 ${dd}일`;
+  };
+
   // -------------------------
   // Calendar grid
   // -------------------------
@@ -99,7 +289,7 @@
     const m = baseDate.getMonth();
 
     const first = new Date(y, m, 1);
-    const startDay = first.getDay(); // 0=일
+    const startDay = first.getDay();
     const gridStart = new Date(y, m, 1 - startDay);
 
     const cells = [];
@@ -120,6 +310,259 @@
     }
     return cells;
   }
+
+  // -------------------------
+  // Render
+  // -------------------------
+  function renderCalendar({
+    targetMonthDate,
+    rules,
+    closedRanges,
+    metaByMonth,
+    months,
+    tabMode,
+  }) {
+    const ym = toYM(targetMonthDate);
+
+    const isClosed = (ymd) =>
+      closedRanges.some((r) => inRange(ymd, r.start_date, r.end_date));
+
+    const cells = buildMonthCells(targetMonthDate, isClosed);
+
+    const meta = metaByMonth.get(ym);
+    const nextOpen = meta?.next_open_date || "";
+
+    const footerTemplate = rules.footer_template || "";
+    const footerText =
+      nextOpen && footerTemplate
+        ? footerTemplate.replace("{next_open_md}", formatMD(nextOpen))
+        : "";
+
+    const closedLabel = rules.closed_label || "마감";
+    const openLabel = rules.open_label || "접수 가능";
+
+    const todayYMD = toYMD(new Date());
+
+    root.classList.remove("is-cal-anim");
+    void root.offsetWidth;
+    root.classList.add("is-cal-anim");
+
+    root.innerHTML = `
+      <div class="miniCal">
+        <div class="miniCal__top">
+          <div class="miniCal__tabs" role="tablist" aria-label="월 선택">
+            ${months
+              .map((m, i) => {
+                const key = `m${i}`;
+                const isOn = tabMode === key;
+                return `
+                  <button class="miniCal__tab ${isOn ? "is-active" : ""}"
+                          data-tab="${key}" type="button">
+                    ${m.getMonth() + 1}월
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
+          <div class="miniCal__title">${targetMonthDate.getFullYear()}.${pad2(
+            targetMonthDate.getMonth() + 1
+          )}</div>
+        </div>
+
+        <div class="miniCal__dow">
+          ${["일", "월", "화", "수", "목", "금", "토"]
+            .map((w) => `<div>${w}</div>`)
+            .join("")}
+        </div>
+
+        <div class="miniCal__grid">
+          ${cells
+            .map((c) => {
+              const closed = c.status === "closed";
+              const statusClass = closed ? "is-closed" : "is-open";
+              const chipClass = closed ? "is-closed" : "is-open";
+              const chipText = closed ? closedLabel : openLabel;
+
+              const isToday = !c.isOtherMonth && c.ymd === todayYMD;
+              const todayClass = isToday ? "is-today" : "";
+
+              return `
+                <div class="miniCal__cell ${c.isOtherMonth ? "is-other" : ""} ${statusClass} ${todayClass}"
+                     data-ymd="${c.ymd}">
+                  <div class="miniCal__day">${c.day}</div>
+                  <div class="miniCal__chip ${chipClass}">${chipText}</div>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+
+        ${footerText ? `<div class="miniCal__footer">${footerText}</div>` : ""}
+      </div>
+    `;
+  }
+
+  function renderError(msg) {
+    root.innerHTML = `
+      <div class="miniCal">
+        <div class="miniCal__footer">캘린더를 불러오지 못했어요. ${msg}</div>
+      </div>
+    `;
+  }
+
+  // -------------------------
+  // Data load
+  // -------------------------
+  async function main() {
+    const [rulesRows, closedRows, metaRows] = await Promise.all([
+      fetchCSV(CSV_URLS.rules),
+      fetchCSV(CSV_URLS.closed_ranges),
+      fetchCSV(CSV_URLS.meta),
+    ]);
+
+    // rules: key/value -> object
+    const rules = {};
+    for (const r of rulesRows) {
+      const key = (r.key || "").trim();
+      const value = (r.value || "").trim();
+      if (key) rules[key] = value;
+    }
+
+    // closed ranges
+    const closedRanges = closedRows
+      .map((r) => ({
+        start_date: (r.start_date || "").trim(),
+        end_date: (r.end_date || "").trim(),
+        reason: (r.reason || "").trim(),
+      }))
+      .filter((r) => r.start_date && r.end_date);
+
+    const metaByMonth = new Map();
+    for (const r of metaRows) {
+      const month = (r.month || "").trim(); // YYYY-MM
+      const next_open_date = (r.next_open_date || "").trim(); // YYYY-MM-DD
+      if (month) metaByMonth.set(month, { next_open_date });
+    }
+
+    const today = new Date();
+    const months = [
+      new Date(today.getFullYear(), today.getMonth(), 1),
+      new Date(today.getFullYear(), today.getMonth() + 1, 1),
+      new Date(today.getFullYear(), today.getMonth() + 2, 1),
+    ];
+
+    let tabMode = "m0";
+    let current = months[0];
+
+    const rerender = () =>
+      renderCalendar({
+        targetMonthDate: current,
+        rules,
+        closedRanges,
+        metaByMonth,
+        months,
+        tabMode,
+      });
+
+    rerender();
+
+    root.addEventListener("click", (e) => {
+      const tab = e.target.closest(".miniCal__tab");
+      if (!tab) return;
+
+      const key = String(tab.dataset.tab || "m0");
+      tabMode = /^m[0-2]$/.test(key) ? key : "m0";
+
+      const idx = Number(tabMode.slice(1));
+      current = months[idx] || months[0];
+
+      rerender();
+    });
+  }
+
+  main().catch((err) => {
+    console.error(err);
+    renderError(err?.message || "원인을 확인해주세요.");
+  });
+})();
+
+  // -------------------------
+  // Data load
+  // -------------------------
+  async function main() {
+    const [rulesRows, closedRows, metaRows] = await Promise.all([
+      fetchCSV(CSV_URLS.rules),
+      fetchCSV(CSV_URLS.closed_ranges),
+      fetchCSV(CSV_URLS.meta),
+    ]);
+
+    // rules: key/value -> object
+    const rules = {};
+    for (const r of rulesRows) {
+      const key = (r.key || "").trim();
+      const value = (r.value || "").trim();
+      if (key) rules[key] = value;
+    }
+
+    // closed ranges
+    const closedRanges = closedRows
+      .map((r) => ({
+        start_date: (r.start_date || "").trim(),
+        end_date: (r.end_date || "").trim(),
+        reason: (r.reason || "").trim(),
+      }))
+      .filter((r) => r.start_date && r.end_date);
+
+    // meta: month -> Map
+    const metaByMonth = new Map();
+    for (const r of metaRows) {
+      const month = (r.month || "").trim(); // YYYY-MM
+      const next_open_date = (r.next_open_date || "").trim(); // YYYY-MM-DD
+      if (month) metaByMonth.set(month, { next_open_date });
+    }
+
+    // 3 months: this / next / next+1
+    const today = new Date();
+    const months = [
+      new Date(today.getFullYear(), today.getMonth(), 1),
+      new Date(today.getFullYear(), today.getMonth() + 1, 1),
+      new Date(today.getFullYear(), today.getMonth() + 2, 1),
+    ];
+
+    let tabMode = "m0";
+    let current = months[0];
+
+    const rerender = () =>
+      renderCalendar({
+        targetMonthDate: current,
+        rules,
+        closedRanges,
+        metaByMonth,
+        months,
+        tabMode,
+      });
+
+    rerender();
+
+    root.addEventListener("click", (e) => {
+      const tab = e.target.closest(".miniCal__tab");
+      if (!tab) return;
+
+      const key = String(tab.dataset.tab || "m0");
+      tabMode = /^m[0-2]$/.test(key) ? key : "m0";
+
+      const idx = Number(tabMode.slice(1));
+      current = months[idx] || months[0];
+
+      rerender();
+    });
+  }
+
+  main().catch((err) => {
+    console.error(err);
+    renderError(err?.message || "원인을 확인해주세요.");
+  });
+})();
 
   // -------------------------
   // Render
