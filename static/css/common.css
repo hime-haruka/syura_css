@@ -220,3 +220,17 @@ img, video, iframe {
         font-size: 12px;
     }
 }
+/* ArtMug parent viewport sticky sync */
+:root {
+  --am-parent-sticky-y: 0px;
+}
+
+.topnav {
+  transform: translate3d(0, var(--am-parent-sticky-y), 0);
+  will-change: transform;
+}
+
+html.am-parent-scrolled .topnav {
+  box-shadow: 0 10px 28px rgba(31, 47, 85, 0.10);
+  border-bottom-color: var(--line-normal);
+}

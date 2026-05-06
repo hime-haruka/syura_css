@@ -877,52 +877,105 @@
 /* =========================
    ArtMug iframe bridge
    - 부모 페이지가 iframe 높이를 자동 조정할 수 있도록 현재 문서 높이를 전달합니다.
-   - 모바일에서는 iframe 내부 스크롤보다 부모 페이지 스크롤이 안정적입니다.
+   - 부모 스크롤 기준으로 상단 내비게이션이 따라오도록 동기화합니다.
    ========================= */
 (function(){
   if (!window.parent || window.parent === window) return;
 
+  const SOURCE = "syura-css";
   let lastHeight = 0;
   let raf = 0;
+  let lastStickyY = -1;
 
   function getPageHeight(){
     const body = document.body;
     const html = document.documentElement;
-    return Math.ceil(Math.max(
+    const candidates = [
       body ? body.scrollHeight : 0,
       body ? body.offsetHeight : 0,
       html ? html.clientHeight : 0,
       html ? html.scrollHeight : 0,
       html ? html.offsetHeight : 0
-    ));
+    ];
+
+    document.querySelectorAll("body > *, main, section").forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      candidates.push(rect.bottom + window.scrollY);
+    });
+
+    return Math.ceil(Math.max.apply(null, candidates));
   }
 
-  function sendHeight(){
+  function sendHeight(force){
     raf = 0;
-    const height = Math.max(700, getPageHeight());
-    if (Math.abs(height - lastHeight) < 2) return;
+    const height = Math.max(700, getPageHeight() + 2);
+    if (!force && Math.abs(height - lastHeight) < 2) return;
     lastHeight = height;
     window.parent.postMessage({
-      source: "syura-css",
+      source: SOURCE,
       type: "SYURA_IFRAME_HEIGHT",
       height
     }, "*");
   }
 
-  function requestSend(){
+  function requestSend(force){
+    if (force) return sendHeight(true);
     if (raf) return;
-    raf = requestAnimationFrame(sendHeight);
+    raf = requestAnimationFrame(() => sendHeight(false));
   }
 
-  window.addEventListener("load", requestSend);
-  window.addEventListener("resize", requestSend);
+  function syncParentViewport(payload){
+    const nav = document.querySelector(".topnav");
+    if (!nav || !payload) return;
+
+    const iframeTop = Number(payload.iframeTop || 0);
+    const iframeHeight = Number(payload.iframeHeight || lastHeight || getPageHeight());
+    const viewportHeight = Number(payload.viewportHeight || 0);
+    const navHeight = nav.offsetHeight || 0;
+
+    // 부모 화면 상단보다 iframe 상단이 위로 올라가면, 그 차이만큼 헤더를 아래로 이동시킵니다.
+    // iframe 영역 끝에 도달하면 헤더가 iframe 밖으로 빠져나가지 않도록 고정합니다.
+    const rawY = Math.max(0, -iframeTop);
+    const maxY = Math.max(0, iframeHeight - navHeight);
+    const y = Math.min(rawY, maxY);
+
+    if (Math.abs(y - lastStickyY) < 1) return;
+    lastStickyY = y;
+
+    document.documentElement.style.setProperty("--am-parent-sticky-y", y + "px");
+    document.documentElement.classList.toggle("am-parent-scrolled", y > 2);
+  }
+
+  window.addEventListener("message", (e) => {
+    const data = e.data || {};
+    if (data.source !== "syura-artmug-parent") return;
+
+    if (data.type === "SYURA_PARENT_VIEWPORT") {
+      syncParentViewport(data);
+      requestSend(false);
+    }
+  });
+
+  window.addEventListener("load", () => requestSend(true));
+  window.addEventListener("resize", () => requestSend(true));
 
   if ("ResizeObserver" in window) {
-    new ResizeObserver(requestSend).observe(document.documentElement);
-    if (document.body) new ResizeObserver(requestSend).observe(document.body);
+    new ResizeObserver(() => requestSend(false)).observe(document.documentElement);
+    if (document.body) new ResizeObserver(() => requestSend(false)).observe(document.body);
   }
 
-  setTimeout(requestSend, 100);
-  setTimeout(requestSend, 500);
-  setTimeout(requestSend, 1200);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => requestSend(true)).catch(() => {});
+  }
+
+  document.querySelectorAll("img, iframe, video").forEach((el) => {
+    el.addEventListener("load", () => requestSend(true), { once:false });
+    el.addEventListener("error", () => requestSend(true), { once:false });
+  });
+
+  window.parent.postMessage({ source: SOURCE, type: "SYURA_IFRAME_READY" }, "*");
+
+  [50, 150, 300, 700, 1200, 2000, 3500].forEach((t) => {
+    setTimeout(() => requestSend(true), t);
+  });
 })();
