@@ -957,6 +957,73 @@
     document.documentElement.classList.toggle("am-parent-scrolled", y > 2);
   }
 
+
+
+  function getOffsetTopInPage(el){
+    let y = 0;
+    let node = el;
+    while (node) {
+      y += node.offsetTop || 0;
+      node = node.offsetParent;
+    }
+    return y;
+  }
+
+  function sendParentAnchorScroll(hash){
+    if (!hash || hash === "#") return false;
+
+    let target = null;
+    try {
+      target = document.querySelector(hash);
+    } catch (err) {
+      target = null;
+    }
+    if (!target) return false;
+
+    const nav = document.querySelector(".topnav");
+    const navHeight = nav ? nav.offsetHeight : 0;
+    const targetY = getOffsetTopInPage(target);
+
+    window.parent.postMessage({
+      source: SOURCE,
+      type: "SYURA_PARENT_SCROLL_TO",
+      targetY,
+      navHeight,
+      hash
+    }, "*");
+
+    return true;
+  }
+
+  function bindParentAnchorScroll(){
+    if (document.documentElement.dataset.parentAnchorBound === "1") return;
+    document.documentElement.dataset.parentAnchorBound = "1";
+
+    document.addEventListener("click", (e) => {
+      const link = e.target && e.target.closest ? e.target.closest('.topnav__links a[href^="#"]') : null;
+      if (!link) return;
+
+      const hash = link.getAttribute("href");
+      if (!hash || hash === "#") return;
+
+      if (sendParentAnchorScroll(hash)) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      }
+    }, true);
+
+    document.querySelectorAll('.topnav__links a[href^="#"]').forEach((link) => {
+      link.addEventListener("click", (e) => {
+        const hash = link.getAttribute("href");
+        if (sendParentAnchorScroll(hash)) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    });
+  }
+
   window.addEventListener("message", (e) => {
     const data = e.data || {};
     if (data.source !== "syura-artmug-parent") return;
@@ -983,6 +1050,8 @@
     el.addEventListener("load", () => requestSend(true), { once:false });
     el.addEventListener("error", () => requestSend(true), { once:false });
   });
+
+  bindParentAnchorScroll();
 
   window.parent.postMessage({ source: SOURCE, type: "SYURA_IFRAME_READY" }, "*");
 
