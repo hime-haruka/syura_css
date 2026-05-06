@@ -606,6 +606,24 @@
   }
 
   function openModal(id, title) {
+    /*
+      아트머그에 iframe으로 들어간 경우에는 iframe 내부가 아니라
+      부모 페이지 기준 중앙에 모달을 띄우도록 부모에게 요청합니다.
+      부모 스크립트가 없거나 일반 페이지로 접속한 경우에는 기존 iframe 내부 모달로 fallback 됩니다.
+    */
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        {
+          source: "syura-css",
+          type: "SYURA_OPEN_YOUTUBE_MODAL",
+          id,
+          title: title || "",
+        },
+        "*"
+      );
+      return;
+    }
+
     const modal = document.createElement("div");
     modal.className = "pofModal";
     modal.innerHTML = `
@@ -854,4 +872,57 @@
       console.error(err);
       renderError(err?.message || "원인을 확인해주세요.");
     });
+})();
+
+/* =========================
+   ArtMug iframe bridge
+   - 부모 페이지가 iframe 높이를 자동 조정할 수 있도록 현재 문서 높이를 전달합니다.
+   - 모바일에서는 iframe 내부 스크롤보다 부모 페이지 스크롤이 안정적입니다.
+   ========================= */
+(function(){
+  if (!window.parent || window.parent === window) return;
+
+  let lastHeight = 0;
+  let raf = 0;
+
+  function getPageHeight(){
+    const body = document.body;
+    const html = document.documentElement;
+    return Math.ceil(Math.max(
+      body ? body.scrollHeight : 0,
+      body ? body.offsetHeight : 0,
+      html ? html.clientHeight : 0,
+      html ? html.scrollHeight : 0,
+      html ? html.offsetHeight : 0
+    ));
+  }
+
+  function sendHeight(){
+    raf = 0;
+    const height = Math.max(700, getPageHeight());
+    if (Math.abs(height - lastHeight) < 2) return;
+    lastHeight = height;
+    window.parent.postMessage({
+      source: "syura-css",
+      type: "SYURA_IFRAME_HEIGHT",
+      height
+    }, "*");
+  }
+
+  function requestSend(){
+    if (raf) return;
+    raf = requestAnimationFrame(sendHeight);
+  }
+
+  window.addEventListener("load", requestSend);
+  window.addEventListener("resize", requestSend);
+
+  if ("ResizeObserver" in window) {
+    new ResizeObserver(requestSend).observe(document.documentElement);
+    if (document.body) new ResizeObserver(requestSend).observe(document.body);
+  }
+
+  setTimeout(requestSend, 100);
+  setTimeout(requestSend, 500);
+  setTimeout(requestSend, 1200);
 })();
