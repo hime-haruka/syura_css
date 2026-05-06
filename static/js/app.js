@@ -889,21 +889,32 @@
 
   function getPageHeight(){
     const body = document.body;
-    const html = document.documentElement;
-    const candidates = [
-      body ? body.scrollHeight : 0,
-      body ? body.offsetHeight : 0,
-      html ? html.clientHeight : 0,
-      html ? html.scrollHeight : 0,
-      html ? html.offsetHeight : 0
-    ];
+    const main = document.querySelector("main.main") || document.querySelector("main");
+    const candidates = [];
 
-    document.querySelectorAll("body > *, main, section").forEach((el) => {
+    /*
+      iframe 높이를 키우면 documentElement/clientHeight도 같이 커집니다.
+      그 값을 다시 부모에게 보내면 700 → 702 → 704처럼 무한 증가하므로
+      viewport 기반 높이는 제외하고 실제 콘텐츠 바닥만 측정합니다.
+    */
+    if (main) {
+      const rect = main.getBoundingClientRect();
+      candidates.push(rect.bottom + window.scrollY);
+    }
+
+    document.querySelectorAll("body > :not(.topnav):not(.pofModal)").forEach((el) => {
+      const style = window.getComputedStyle(el);
+      if (style.position === "fixed") return;
       const rect = el.getBoundingClientRect();
       candidates.push(rect.bottom + window.scrollY);
     });
 
-    return Math.ceil(Math.max.apply(null, candidates));
+    const bodyStyle = body ? window.getComputedStyle(body) : null;
+    const extraBottom = bodyStyle
+      ? (parseFloat(bodyStyle.paddingBottom) || 0) + (parseFloat(bodyStyle.marginBottom) || 0)
+      : 0;
+
+    return Math.ceil(Math.max(700, ...candidates) + extraBottom + 2);
   }
 
   function sendHeight(force){
@@ -960,8 +971,8 @@
   window.addEventListener("resize", () => requestSend(true));
 
   if ("ResizeObserver" in window) {
-    new ResizeObserver(() => requestSend(false)).observe(document.documentElement);
-    if (document.body) new ResizeObserver(() => requestSend(false)).observe(document.body);
+    const target = document.querySelector("main.main") || document.querySelector("main") || document.body;
+    if (target) new ResizeObserver(() => requestSend(false)).observe(target);
   }
 
   if (document.fonts && document.fonts.ready) {
