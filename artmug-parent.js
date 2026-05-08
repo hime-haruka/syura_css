@@ -7,7 +7,6 @@
     if (document.getElementById('syura-artmug-style')) return;
 
     const style = document.createElement('style');
-
     style.id = 'syura-artmug-style';
 
     style.textContent = `
@@ -94,6 +93,64 @@
     document.head.appendChild(style);
   }
 
+  function killButtons(root = document) {
+    root
+      .querySelectorAll('.btn_open_btn,.btn_open,.btn_close')
+      .forEach(el => el.remove());
+  }
+
+  function unlockDetail() {
+    const box = document.querySelector('.detailinfo');
+
+    if (!box) return;
+
+    box.classList.remove('showstep1');
+
+    box.style.maxHeight = 'none';
+    box.style.overflow = 'visible';
+
+    const content = box.querySelector('.showcontent');
+
+    if (content) {
+      content.style.maxHeight = 'none';
+      content.style.overflow = 'visible';
+    }
+  }
+
+  function stripListeners() {
+    document
+      .querySelectorAll('.btn_open_btn,.btn_open,.btn_close')
+      .forEach(btn => {
+        const clone = btn.cloneNode(true);
+
+        if (btn.parentNode) {
+          btn.parentNode.replaceChild(clone, btn);
+        }
+      });
+  }
+
+  function hardBlockClicks() {
+    if (window.__syuraHardBlockClicks) return;
+
+    window.__syuraHardBlockClicks = true;
+
+    document.addEventListener(
+      'click',
+      e => {
+        const bad = e.target.closest(
+          '.btn_open_btn,.btn_open,.btn_close'
+        );
+
+        if (bad) {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      },
+      true
+    );
+  }
+
   function getIframe() {
     return document.querySelector(
       '#detailViews [name="am-root"] iframe,[name="am-root"] iframe'
@@ -113,7 +170,6 @@
     if (Math.abs(nextHeight - lastHeight) < 4) return;
 
     lastHeight = nextHeight;
-
     iframe.style.height = nextHeight + 'px';
 
     sendViewportToIframe();
@@ -199,32 +255,30 @@
     modal.className = 'syuraParentModal';
 
     modal.innerHTML = `
-<div class="syuraParentModal">
-  <div class="syuraParentModal__backdrop" data-close="1"></div>
+<div class="syuraParentModal__backdrop" data-close="1"></div>
 
-  <div
-    class="syuraParentModal__panel"
-    role="dialog"
-    aria-modal="true"
-    aria-label="${escapeHTML(title || '영상 재생')}"
+<div
+  class="syuraParentModal__panel"
+  role="dialog"
+  aria-modal="true"
+  aria-label="${escapeHTML(title || '영상 재생')}"
+>
+  <button
+    class="syuraParentModal__close"
+    type="button"
+    data-close="1"
+    aria-label="닫기"
   >
-    <button
-      class="syuraParentModal__close"
-      type="button"
-      data-close="1"
-      aria-label="닫기"
-    >
-      ✕
-    </button>
+    ✕
+  </button>
 
-    <div class="syuraParentModal__frame">
-      <iframe
-        src="https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0"
-        title="${escapeHTML(title || 'YouTube video player')}"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        allowfullscreen
-      ></iframe>
-    </div>
+  <div class="syuraParentModal__frame">
+    <iframe
+      src="https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0"
+      title="${escapeHTML(title || 'YouTube video player')}"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen
+    ></iframe>
   </div>
 </div>
 `;
@@ -249,7 +303,6 @@
     });
 
     document.addEventListener('keydown', onKey);
-
     document.body.appendChild(modal);
   }
 
@@ -290,21 +343,21 @@
       { passive: true }
     );
 
-    window.addEventListener(
-      'resize',
-      sendViewportToIframe
-    );
+    window.addEventListener('resize', sendViewportToIframe);
 
-    window.addEventListener(
-      'orientationchange',
-      () => {
-        setTimeout(sendViewportToIframe, 300);
-      }
-    );
+    window.addEventListener('orientationchange', () => {
+      setTimeout(sendViewportToIframe, 300);
+    });
   }
 
   function neutralize() {
     injectStyle();
+
+    killButtons();
+    stripListeners();
+    unlockDetail();
+    hardBlockClicks();
+
     bindMessages();
     sendViewportToIframe();
   }
@@ -312,10 +365,7 @@
   if (document.readyState !== 'loading') {
     neutralize();
   } else {
-    document.addEventListener(
-      'DOMContentLoaded',
-      neutralize
-    );
+    document.addEventListener('DOMContentLoaded', neutralize);
   }
 
   setTimeout(neutralize, 300);
