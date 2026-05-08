@@ -188,6 +188,12 @@
                         </p>
                     </header>
 
+                    <div class="serviceTabs" role="tablist" aria-label="가격표 탭" data-tabs="price">
+                        <button class="serviceTab is-active" type="button" role="tab" data-price-tab="chat" aria-selected="true">채팅창</button>
+                        <button class="serviceTab" type="button" role="tab" data-price-tab="overlay" aria-selected="false">룰렛/오버레이</button>
+                    </div>
+
+                    <div class="pricePanel" data-price-panel="chat">
                     <div class="priceGrid">
                         <article class="priceCard priceCard--featured" aria-label="슈꾸 커스텀 채팅 패키지">
                         <div class="priceCard__top">
@@ -414,6 +420,49 @@
                             </article>
                         </div>
                     </section>
+                    </div>
+
+                    <div class="pricePanel is-hidden" data-price-panel="overlay">
+                        <div class="priceGrid">
+                            <article class="priceCard priceCard--featured" aria-label="룰렛/오버레이 기본 패키지">
+                                <div class="priceCard__top">
+                                    <h3 class="priceCard__title">기본 패키지 <span class="priceCard__muted">(배경 미포함)</span></h3>
+                                    <p class="priceCard__price">
+                                        <span class="priceCard__currency">₩</span>
+                                        <span class="priceCard__amount">300,000</span>
+                                    </p>
+                                </div>
+                                <div class="priceCard__body">
+                                    <h4 class="priceCard__sub">포함 내용</h4>
+                                    <ul class="priceList" role="list">
+                                        <li>치지직/유튜브 방송용 룰렛 또는 오버레이 기본 구성</li>
+                                        <li>방송 스타일에 맞춘 UI 디자인 및 기본 연동 구조</li>
+                                        <li>버츄얼 모델과 방송 배경은 제공 자료 기준으로 적용</li>
+                                    </ul>
+                                    <p class="priceNote">※ 배경이 포함되지 않은 구성입니다. 사용하실 방송 배경을 함께 첨부해주세요.</p>
+                                </div>
+                            </article>
+
+                            <article class="priceCard" aria-label="룰렛/오버레이 풀 패키지">
+                                <div class="priceCard__top">
+                                    <h3 class="priceCard__title">풀 패키지 <span class="priceCard__muted">(배경 포함)</span></h3>
+                                    <p class="priceCard__price">
+                                        <span class="priceCard__currency">₩</span>
+                                        <span class="priceCard__amount">400,000</span>
+                                    </p>
+                                </div>
+                                <div class="priceCard__body">
+                                    <h4 class="priceCard__sub">포함 내용</h4>
+                                    <ul class="priceList" role="list">
+                                        <li>기본 패키지 구성 전체</li>
+                                        <li>오버레이에 맞춘 전용 방송 배경 제작 포함</li>
+                                        <li>룰렛/벌칙 구성 및 화면 연출 방향 정리</li>
+                                    </ul>
+                                    <p class="priceNote">※ 세부 기능/연출 범위에 따라 최종 견적이 조정될 수 있습니다.</p>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
                 </section>
             </div>
         </section>
@@ -433,9 +482,15 @@
                     <h2 class="sectionTitle" id="formTitle">신청 양식</h2>
                 </header>
 
+                <div class="serviceTabs" role="tablist" aria-label="신청 양식 탭" data-tabs="form">
+                    <button class="serviceTab is-active" type="button" role="tab" data-form-tab="chat" aria-selected="true">채팅</button>
+                    <button class="serviceTab" type="button" role="tab" data-form-tab="overlay" aria-selected="false">룰렛/오버레이</button>
+                </div>
+
                 <div class="formGrid">
                     <!-- Left: Form -->
                     <form class="orderForm" id="orderForm" autocomplete="on">
+                    <div class="formPanel" data-form-panel="chat">
                     <!-- 방송 플랫폼 주소 -->
                     <div class="fRow">
                         <label class="fLabel" for="streamUrl">방송 플랫폼 주소</label>
@@ -563,6 +618,47 @@
                         <label class="fLabel" for="refs">스타일 / 참고 자료</label>
                         <textarea class="fTextarea" id="refs" name="refs" rows="6"
                         placeholder="원하는 무드/색감, 레퍼런스(이미지 첨부 / 핀터레스트 / 구글드라이브 등), 꼭 들어가야 하는 요소 및 애니메이션 등 상세한 내용을 작성해주세요. 문의 단계에서 설명해주시지 않은 범위의 수정 요청은 재작업으로 안내드리며, 추가금이 발생합니다."></textarea>
+                    </div>
+
+                    </div>
+
+                    <div class="formPanel is-hidden" data-form-panel="overlay">
+                        <div class="fRow">
+                            <label class="fLabel" for="overlayPlatform">방송 플랫폼</label>
+                            <input class="fInput" id="overlayPlatform" name="overlay_platform" type="text" placeholder="치지직 / 유튜브 등" />
+                        </div>
+
+                        <fieldset class="fRow fFieldset">
+                            <legend class="fLegend">옵션 선택</legend>
+                            <div class="pillGroup" role="radiogroup" aria-label="룰렛/오버레이 옵션 선택">
+                                <label class="pill">
+                                    <input class="pill__input" type="radio" name="overlay_option" value="overlay_basic" checked />
+                                    <span class="pill__ui">기본 패키지</span>
+                                </label>
+
+                                <label class="pill">
+                                    <input class="pill__input" type="radio" name="overlay_option" value="overlay_full" />
+                                    <span class="pill__ui">풀 패키지</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <div class="twoCol">
+                            <div class="fRow">
+                                <label class="fLabel" for="overlayDueDate">희망 마감일</label>
+                                <input class="fInput" id="overlayDueDate" name="overlay_due_date" type="date" />
+                            </div>
+
+                            <div class="fRow">
+                                <label class="fLabel" for="overlaySampleOpenDate">샘플 공개 일정</label>
+                                <input class="fInput" id="overlaySampleOpenDate" name="overlay_sample_open_date" type="date" />
+                            </div>
+                        </div>
+
+                        <div class="fRow">
+                            <label class="fLabel" for="overlayRefs">스타일 / 참고 자료</label>
+                            <textarea class="fTextarea" id="overlayRefs" name="overlay_refs" rows="7" placeholder="벌칙 갯수는 10종까지 가능합니다. 버츄얼 모델 + 배경 미포함의 경우 사용하실 방송 배경을 함께 첨부해주세요."></textarea>
+                        </div>
                     </div>
 
                     <div class="estimateInline" aria-label="예상 견적">

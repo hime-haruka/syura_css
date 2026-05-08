@@ -417,3 +417,9 @@
     align-items: flex-start;
   }
 }
+.priceCard__muted{
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

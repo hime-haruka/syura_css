@@ -1,5 +1,5 @@
 // =========================
-// Form (calc + copy)
+// Form (tabs + calc + copy)
 // =========================
 (() => {
   const form = document.getElementById("orderForm");
@@ -8,6 +8,13 @@
   const estEl = document.getElementById("estAmount");
   const btnCopy = document.getElementById("formCopy");
   const btnReset = document.getElementById("formReset");
+  const formTabs = Array.from(document.querySelectorAll("[data-form-tab]"));
+  const formPanels = Array.from(document.querySelectorAll("[data-form-panel]"));
+  const priceTabs = Array.from(document.querySelectorAll("[data-price-tab]"));
+  const pricePanels = Array.from(document.querySelectorAll("[data-price-panel]"));
+  const migrateAddons = document.getElementById("migrateAddons");
+
+  let activeForm = "chat";
 
   // ---- pricing ----
   const PRICING = {
@@ -16,6 +23,8 @@
       light: 200000,
       omakase: 180000,
       migrate: 100000,
+      overlay_basic: 300000,
+      overlay_full: 400000,
     },
     add: {
       add_color_preset: 5000,
@@ -55,23 +64,63 @@
     return { streamUrl, chatPlatform };
   }
 
-  function calcEstimate() {
-    const baseOpt = getRadio("base_option") || "custom";
-    const base = PRICING.base[baseOpt] ?? 0;
+  function setActiveForm(next) {
+    activeForm = next === "overlay" ? "overlay" : "chat";
 
-    let addSum = 0;
-    Object.entries(PRICING.add).forEach(([k, v]) => {
-      if (getCheck(k)) addSum += v;
+    formTabs.forEach((btn) => {
+      const isOn = btn.dataset.formTab === activeForm;
+      btn.classList.toggle("is-active", isOn);
+      btn.setAttribute("aria-selected", isOn ? "true" : "false");
     });
 
-    let mult = 1;
-    const fast = getCheck("add_fast_deadline");
-    const sameDay = getCheck("add_same_day");
+    formPanels.forEach((panel) => {
+      panel.classList.toggle("is-hidden", panel.dataset.formPanel !== activeForm);
+    });
 
-    if (sameDay) mult = PRICING.multiplier.add_same_day;
-    else if (fast) mult = PRICING.multiplier.add_fast_deadline;
+    calcEstimate();
+  }
 
-    const total = (base + addSum) * mult;
+  function setActivePrice(next) {
+    const active = next === "overlay" ? "overlay" : "chat";
+
+    priceTabs.forEach((btn) => {
+      const isOn = btn.dataset.priceTab === active;
+      btn.classList.toggle("is-active", isOn);
+      btn.setAttribute("aria-selected", isOn ? "true" : "false");
+    });
+
+    pricePanels.forEach((panel) => {
+      panel.classList.toggle("is-hidden", panel.dataset.pricePanel !== active);
+    });
+  }
+
+  function calcEstimate() {
+    let total = 0;
+
+    if (activeForm === "overlay") {
+      const overlayOpt = getRadio("overlay_option") || "overlay_basic";
+      total = PRICING.base[overlayOpt] ?? 0;
+    } else {
+      const baseOpt = getRadio("base_option") || "custom";
+      if (migrateAddons) migrateAddons.classList.toggle("is-hidden", baseOpt !== "migrate");
+      const base = PRICING.base[baseOpt] ?? 0;
+
+      let addSum = 0;
+      Object.entries(PRICING.add).forEach(([k, v]) => {
+        if (getCheck(k)) addSum += v;
+      });
+
+      let mult = 1;
+      const fast = getCheck("add_fast_deadline");
+      const sameDay = getCheck("add_same_day");
+
+      if (sameDay) mult = PRICING.multiplier.add_same_day;
+      else if (fast) mult = PRICING.multiplier.add_fast_deadline;
+
+      total = (base + addSum) * mult;
+    }
+
+    if (activeForm === "overlay" && migrateAddons) migrateAddons.classList.add("is-hidden");
 
     if (estEl) estEl.textContent = fmt(total);
     return Math.round(total);
@@ -100,9 +149,8 @@
     }
   }
 
-  function buildCopyTemplate() {
+  function buildChatCopyTemplate() {
     const { streamUrl, chatPlatform } = getTextValueFallback();
-
     const baseOpt = getRadio("base_option") || "custom";
 
     const baseLabelMap = {
@@ -125,11 +173,9 @@
 
     const showNickname = getRadio("show_nickname") || "yes";
     const showTipNickname = getRadio("show_tip_nickname") || "yes";
-
     const dueDate = (qs('input[name="due_date"]')?.value || "").trim();
     const sampleOpen = (qs('input[name="sample_open_date"]')?.value || "").trim();
     const refs = (qs('textarea[name="refs"]')?.value || "").trim();
-
     const est = calcEstimate();
 
     return [
@@ -149,12 +195,47 @@
     ].join("\n");
   }
 
+  function buildOverlayCopyTemplate() {
+    const platform = (qs('input[name="overlay_platform"]')?.value || "").trim();
+    const overlayOpt = getRadio("overlay_option") || "overlay_basic";
+    const optionLabel = overlayOpt === "overlay_full" ? "풀 패키지" : "기본 패키지";
+    const dueDate = (qs('input[name="overlay_due_date"]')?.value || "").trim();
+    const sampleOpen = (qs('input[name="overlay_sample_open_date"]')?.value || "").trim();
+    const refs = (qs('textarea[name="overlay_refs"]')?.value || "").trim();
+    const est = calcEstimate();
+
+    return [
+      "📌 룰렛/오버레이 신청 양식",
+      "",
+      `- 방송 플랫폼: ${platform || "-"}`,
+      `- 옵션 선택: ${optionLabel}`,
+      `- 희망 마감일: ${dueDate || "-"}`,
+      `- 샘플 공개 일정: ${sampleOpen || "-"}`,
+      `- 스타일/참고 자료:\n${refs || "-"}`,
+      "",
+      `💰 예상 견적: ₩${fmt(est)}`,
+    ].join("\n");
+  }
+
+  function buildCopyTemplate() {
+    return activeForm === "overlay" ? buildOverlayCopyTemplate() : buildChatCopyTemplate();
+  }
+
   // ---- events ----
+  formTabs.forEach((btn) => {
+    btn.addEventListener("click", () => setActiveForm(btn.dataset.formTab));
+  });
+
+  priceTabs.forEach((btn) => {
+    btn.addEventListener("click", () => setActivePrice(btn.dataset.priceTab));
+  });
+
   form.addEventListener("input", () => calcEstimate());
   form.addEventListener("change", () => calcEstimate());
   form.addEventListener("reset", () => {
     setTimeout(() => {
-      if (estEl) estEl.textContent = "0";
+      setActiveForm("chat");
+      calcEstimate();
     }, 0);
   });
 
@@ -171,5 +252,6 @@
     }, 900);
   });
 
-  calcEstimate();
+  setActivePrice("chat");
+  setActiveForm("chat");
 })();

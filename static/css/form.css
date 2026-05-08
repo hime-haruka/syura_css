@@ -411,3 +411,45 @@ font-family: 'NanumSquareNeo';
   font-weight: 400;
   line-height: 1.65;
 }
+/* =========================
+   Service Tabs / Form Panels
+========================= */
+.serviceTabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin: 10px 0 18px;
+}
+
+.serviceTab{
+  padding:8px 13px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:900;
+  border:1px solid var(--line-normal);
+  background:var(--bg-card-soft);
+  color:var(--text-sub);
+  cursor:pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+}
+
+.serviceTab:hover{
+  background:var(--ui-hover);
+  border-color:var(--line-strong);
+}
+
+.serviceTab.is-active{
+  background:var(--ui-active);
+  border-color:var(--primary-500);
+  color:var(--text-main);
+}
+
+.serviceTab:focus-visible{
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+
+.formPanel.is-hidden,
+.pricePanel.is-hidden{
+  display:none;
+}
