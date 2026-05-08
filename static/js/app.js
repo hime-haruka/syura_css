@@ -446,6 +446,7 @@
     { key: "collab", label: "협업 패키지" },
     { key: "legacy", label: "레거시 패키지" },
     { key: "migrate", label: "CSS 이식" },
+    { key: "overlay", label: "룰렛/오버레이" },
   ];
 
   function parseCSV(text) {

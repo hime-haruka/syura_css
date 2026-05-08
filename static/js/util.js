@@ -20,7 +20,7 @@
     add: {
       add_color_preset: 5000,
       add_embargo: 20000,
-      add_private_portfolio: 30000,
+      add_private_portfolio: 50000,
       add_tip_platform: 10000,
       add_after_revision: 10000,
     },
@@ -119,8 +119,8 @@
     if (getCheck("add_tip_platform")) optLabels.push("후원 플랫폼 추가");
     if (getCheck("add_embargo")) optLabels.push("엠바고");
     if (getCheck("add_private_portfolio")) optLabels.push("포트폴리오 비공개");
-    if (getCheck("add_fast_deadline")) optLabels.push("빠른 마감(48h)");
-    if (getCheck("add_same_day")) optLabels.push("당일 마감(24h)");
+    if (getCheck("add_fast_deadline")) optLabels.push("빠른 마감");
+    if (getCheck("add_same_day")) optLabels.push("72h 이내 작업");
     if (getCheck("add_after_revision")) optLabels.push("완료 후 추가 수정");
 
     const showNickname = getRadio("show_nickname") || "yes";
