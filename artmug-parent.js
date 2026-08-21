@@ -1,5 +1,5 @@
 (function () {
-  const IFRAME_ORIGIN = 'https://syura-css.netlify.app';
+  const IFRAME_ORIGIN = 'https://hime-haruka.github.io/syura_css';
 
   let lastHeight = 0;
 
