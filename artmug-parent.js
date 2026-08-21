@@ -1,5 +1,5 @@
 (function () {
-  const IFRAME_ORIGIN = 'https://hime-haruka.github.io/syura_css';
+  const IFRAME_ORIGIN = 'https://hime-haruka.github.io';
 
   let lastHeight = 0;
 
